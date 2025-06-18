@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "955045819699",
+    "project_id": "ahoum-69e59",
+    "storage_bucket": "ahoum-69e59.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:955045819699:android:927b20645e27fb5dacba46",
+        "android_client_info": {
+          "package_name": "com.sampleproject"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "955045819699-p79gthmv7ekb3oud5bhojv114umnijge.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCdHFsocSJt98DVID2v9gEDjXM8kj64-kE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "955045819699-p79gthmv7ekb3oud5bhojv114umnijge.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
