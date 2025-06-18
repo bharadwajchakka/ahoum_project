@@ -1,97 +1,212 @@
-This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
+# Ahoum Task – React Native App with Firebase Google OAuth
 
-# Getting Started
+This is a React Native Android application built as part of the **Ahoum backend intern hiring assessment**. It showcases Google OAuth 2.0 authentication using **Firebase**, clean UI screens, and secure routing based on login state — all built without a custom backend.
 
-> **Note**: Make sure you have completed the [Set Up Your Environment](https://reactnative.dev/docs/set-up-your-environment) guide before proceeding.
+---
 
-## Step 1: Start Metro
+## 🚀 Features
 
-First, you will need to run **Metro**, the JavaScript build tool for React Native.
+- 🔐 Google Sign-In via Firebase Authentication
+- 🎯 Auth state handling and secure navigation
+- 🧾 User profile screen showing Google account info
+- 🔁 Session persistence and logout
+- ⚠️ Loading and error handling
 
-To start the Metro dev server, run the following command from the root of your React Native project:
+---
 
-```sh
-# Using npm
+## 🛠️ Tech Stack
+
+| Layer        | Technology                          |
+|--------------|--------------------------------------|
+| Framework    | React Native (CLI only, not Expo)    |
+| Auth Service | Firebase Authentication              |
+| Auth Provider| Google Sign-In (`@react-native-google-signin/google-signin`) |
+| State Mgmt   | React Context API or Zustand         |
+| Navigation   | React Navigation (Stack Navigator)   |
+| Storage      | AsyncStorage                         |
+
+---
+
+## 📁 Folder Structure
+
+```
+
+ahoum\_project/
+├── android/
+├── ios/
+├── assets/
+├── components/
+├── screens/
+├── navigation/
+├── Utils/
+├── App.js
+└── README.md
+
+```
+
+---
+
+## 🔧 Prerequisites
+
+- Node.js ≥ 18.x
+- React Native CLI
+- Android Studio with emulator or real device
+- Firebase Console account
+- Registered Android SHA-1 fingerprint
+
+---
+
+## 🔑 Firebase Setup
+
+1. Go to [Firebase Console](https://console.firebase.google.com/)
+2. Create a project (e.g. `SampleProject`)
+3. Add an Android app
+   - Provide your app's package name
+   - Register your **SHA-1** (use `./gradlew signingReport`)
+4. Download `google-services.json` and place it in: android/app/
+```
+
+android/app/google-services.json
+
+```
+5. Enable **Google** Sign-In under:
+```
+
+Firebase Console → Authentication → Sign-in Method → Google
+
+````
+
+---
+
+## 📦 Installation
+
+```bash
+git clone https://github.com/bharadwajchakka/ahoum_project.git
+cd ahoum_project
+
+npm install
+````
+
+---
+
+## ▶️ Running the App
+
+### 1. Start Metro
+
+```bash
 npm start
-
-# OR using Yarn
-yarn start
 ```
 
-## Step 2: Build and run your app
+### 2. Run on Android
 
-With Metro running, open a new terminal window/pane from the root of your React Native project, and use one of the following commands to build and run your Android or iOS app:
-
-### Android
-
-```sh
-# Using npm
+```bash
 npm run android
-
-# OR using Yarn
-yarn android
 ```
 
-### iOS
+> Emulator or device must be connected and authorized.
 
-For iOS, remember to install CocoaPods dependencies (this only needs to be run on first clone or after updating native deps).
+---
 
-The first time you create a new project, run the Ruby bundler to install CocoaPods itself:
+## 🧑‍💻 Implementation
 
-```sh
-bundle install
+### 🔐 Google OAuth + Firebase Authentication
+
+* Uses `@react-native-google-signin/google-signin` for OAuth login
+* Passes Google token to Firebase to sign in:
+
+```js
+const { idToken } = await GoogleSignin.signIn();
+const googleCredential = auth.GoogleAuthProvider.credential(idToken);
+await auth().signInWithCredential(googleCredential);
 ```
 
-Then, and every time you update your native dependencies, run:
+### 📲 Auth State Management
 
-```sh
-bundle exec pod install
+* Listens to Firebase auth state via `onAuthStateChanged()`
+* Dynamically switches screens based on login status
+
+```js
+auth().onAuthStateChanged(user => {
+  setUser(user); // stored in Context or Zustand
+});
 ```
 
-For more information, please visit [CocoaPods Getting Started guide](https://guides.cocoapods.org/using/getting-started.html).
+### 🧭 Navigation
 
-```sh
-# Using npm
-npm run ios
+* Uses Stack Navigator from `@react-navigation/native`
+* Authenticated users → Dashboard
+* Unauthenticated users → Login
 
-# OR using Yarn
-yarn ios
+```js
+{user ? <AppStack /> : <AuthStack />}
 ```
 
-If everything is set up correctly, you should see your new app running in the Android Emulator, iOS Simulator, or your connected device.
+### 👤 User Profile (not implemented)
 
-This is one way to run your app — you can also build it directly from Android Studio or Xcode.
+* Displays name, email, and photo from Firebase user object
 
-## Step 3: Modify your app
+```js
+const user = auth().currentUser;
+<Text>{user.displayName}</Text>
+<Image source={{ uri: user.photoURL }} />
+```
 
-Now that you have successfully run the app, let's make changes!
+### 🚪 Logout Functionality
 
-Open `App.tsx` in your text editor of choice and make some changes. When you save, your app will automatically update and reflect these changes — this is powered by [Fast Refresh](https://reactnative.dev/docs/fast-refresh).
+* Clears session from both Google and Firebase:
 
-When you want to forcefully reload, for example to reset the state of your app, you can perform a full reload:
+```js
+await GoogleSignin.signOut();
+await auth().signOut();
+```
 
-- **Android**: Press the <kbd>R</kbd> key twice or select **"Reload"** from the **Dev Menu**, accessed via <kbd>Ctrl</kbd> + <kbd>M</kbd> (Windows/Linux) or <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> (macOS).
-- **iOS**: Press <kbd>R</kbd> in iOS Simulator.
+---
 
-## Congratulations! :tada:
+## 🔐 Security Notes
 
-You've successfully run and modified your React Native App. :partying_face:
+* Firebase handles session and token storage securely
+* Google Client ID is restricted via SHA-1 + package name
+* No sensitive info (keys) committed to the repo
+* Optionally use `.env` + `react-native-config` for environment variables
 
-### Now what?
+---
 
-- If you want to add this new React Native code to an existing application, check out the [Integration guide](https://reactnative.dev/docs/integration-with-existing-apps).
-- If you're curious to learn more about React Native, check out the [docs](https://reactnative.dev/docs/getting-started).
+## ✅ Tested Scenarios
 
-# Troubleshooting
+* Google Sign-In first login
+* Auto re-auth on app restart
+* Logout and re-login
+* Invalid credential error handling
+* UI state on loading/errors
 
-If you're having issues getting the above steps to work, see the [Troubleshooting](https://reactnative.dev/docs/troubleshooting) page.
+---
 
-# Learn More
+## 📄 License
 
-To learn more about React Native, take a look at the following resources:
+This project is developed as part of the **Ahoum Backend Intern Assessment Task**.
 
-- [React Native Website](https://reactnative.dev) - learn more about React Native.
-- [Getting Started](https://reactnative.dev/docs/environment-setup) - an **overview** of React Native and how setup your environment.
-- [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
-- [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
-- [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
+---
+
+## 🙋 Contact
+
+**Bharadwaj Chakka**
+📧 [bharadwajchakka@gmail.com](mailto:bharadwajchakka10182004@gmail.com)
+
+---
+
+## 📚 Resources
+
+* [React Native Docs](https://reactnative.dev/docs/getting-started)
+* [Firebase Docs](https://firebase.google.com/docs)
+* [React Native Firebase](https://rnfirebase.io/)
+* [Google Sign-In for React Native](https://github.com/react-native-google-signin/google-signin)
+
+```
+
+---
+
+Let me know if you'd like to:
+- include a demo video/GIF in the README,
+- auto-generate screenshots,
+- or create a `firebaseConfig.js` starter with instructions.
+```
